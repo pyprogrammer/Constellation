@@ -1,4 +1,4 @@
-from ..core import Pattern, Function
+from ..compute import Pattern, Function
 
 __all__ = ["Map"]
 
@@ -8,5 +8,5 @@ def map_validator(parameters):
 
 
 Map = Pattern(
-    "Map", map_validator, Function
+    "Map", (1,), 1, map_validator, Function
 )

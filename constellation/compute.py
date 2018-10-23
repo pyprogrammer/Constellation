@@ -6,12 +6,16 @@ import networkx as nx
 class Pattern:
     patterns: typing.Dict[str, 'Pattern'] = {}
 
-    def __init__(self, name: str, validator: typing.Callable[[typing.Any], bool] = lambda _: True,
+    def __init__(self, name: str, input_signature: typing.Tuple[int, ...], num_outputs: int,
+                 validator: typing.Callable[[typing.Any], bool] = lambda _: True,
                  parameter_type: typing.Type = typing.Any):
         self.implementations = []
         self.validator = validator
         self.parameter_type = parameter_type
         self.name = name
+
+        self.input_signature = input_signature
+        self.num_outputs = num_outputs
 
         if name in self.patterns:
             raise ValueError(f"Pattern name {name} is already taken.")
@@ -22,25 +26,25 @@ class Pattern:
         self.implementations.append(implementation)
 
     def __str__(self):
-        return f"{self.name}<{self.parameter_type}>"
+        return f"{self.name}[{self.parameter_type}]{self.input_signature} -> {self.num_outputs}"
 
 
-Placeholder = Pattern("Placeholder")
+Placeholder = Pattern("Placeholder", (), 1)
 
-Argument = Pattern("Argument")
+Argument = Pattern("Argument", (), 1)
 
-Constant = Pattern("Constant")
+Constant = Pattern("Constant", (), 1)
 
 
 class Implementation:
-    def __init__(self, pattern: Pattern, graph: nx.DiGraph):
+    def __init__(self, pattern: Pattern, graph: 'Function'):
         self.pattern = pattern
         self.graph = graph
         self.pattern.register_impl(self)
 
 
 class Function:
-    def __init__(self, graph: nx.MultiDiGraph, inputs: typing.Dict[int, typing.List[int]],
+    def __init__(self, graph: nx.MultiDiGraph, inputs: typing.Dict[int, typing.Tuple[int, ...]],
                  outputs: typing.Dict[int, int]):
         """
         :param graph: A MultiDiGraph encoding the sub-computation

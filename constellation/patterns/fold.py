@@ -1,6 +1,6 @@
 import typing
 
-from ..core import Pattern, Function
+from ..compute import Pattern, Function
 
 __all__ = ["fold"]
 
